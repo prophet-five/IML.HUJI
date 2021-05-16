@@ -9,7 +9,7 @@ class Classifier(ABC):
     """An abstract class defining a classification model"""
 
     def __init__(self):
-        _trained_model = None
+        self._trained_model = None
 
     @abstractmethod
     def fit(self, X, y):
@@ -54,6 +54,9 @@ class Classifier(ABC):
         score_dict["specificty"] = 1 - score_dict[
             "FPR"]  # The typo is defined in the ex description
         return score_dict
+
+    def get_trained_model(self):
+        return self._trained_model
 
 
 class Perceptron(Classifier):
@@ -101,6 +104,7 @@ class LDA(Classifier):
         self._trained_model = (y_mean, sig, bias)
 
     def predict(self, X):
+        X = X.T
         y_mean, sig, bias = self._trained_model
         prediction = (-2) * np.argmax(X.T @ np.linalg.inv(sig) @ y_mean + bias,
                                       axis=1) + 1
