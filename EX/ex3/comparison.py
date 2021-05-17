@@ -104,6 +104,3 @@ def test_q10():
         plt.title("Mean accuracy as function of m")
         plt.legend()
     plt.show()
-
-
-test_q10()
