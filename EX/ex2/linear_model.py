@@ -47,7 +47,7 @@ def load_data(path):
     data = pd.get_dummies(data, columns=['zipcode'])
     # separate
     prices = data['price']
-    data = data.drop(columns=['id', 'price', 'lat', 'long', 'date'])
+    data = data.drop(columns=['id','lat', 'long', 'date'])
 
     data.insert(0, 'intercept', 1, True)
     return data, prices
@@ -123,3 +123,5 @@ def feature_evaluation(X, y):
         plt.xlabel(f"{feat}")
         plt.ylabel("Price")
         plt.show()
+
+
