@@ -83,6 +83,3 @@ def Q14_combined():
     plt.title("Mean Accuracy as Function of m ")
     plt.legend()
     plt.show()
-
-
-Q14_combined()

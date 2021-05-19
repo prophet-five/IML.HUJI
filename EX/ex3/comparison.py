@@ -60,8 +60,8 @@ def apply_draw():
 
         model = svm_model.get_trained_model()
         th_hp = [
-            -3 * model.coef_[0, 0] / model.coef_[0, 1] + model.intercept_ /
-            model.coef_[0, 1],
+            -3 * model.coef_[0, 0] / -model.coef_[0, 1] + model.intercept_ /
+            -model.coef_[0, 1],
             3 * model.coef_[0, 0] / -model.coef_[0, 1] + model.intercept_ / -
             model.coef_[0, 1]]
 
