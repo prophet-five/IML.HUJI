@@ -7,7 +7,7 @@ import plotly.io as pio
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.express as px
-
+from collections import namedtuple
 pio.templates["custom"] = go.layout.Template(
     layout=go.Layout(
         margin=dict(l=20, r=20, t=40, b=0)
