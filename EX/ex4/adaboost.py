@@ -81,10 +81,14 @@ class AdaBoost(object):
         err = np.sum(y_pred != y) / y.shape[0]
         return err
 
+
 # def generate_data(sample_num=5000, noise_ratio=0, T=500):
 #     train = k
 
 
 def q13_generate_data():
-    pass
+    train_X, train_y = t4.generate_data(5000, 0)
+    test_X, test_y = t4.generate_data(200, 0)
+    ada = AdaBoost(t4.DecisionStump, 500)
 
+    pass
