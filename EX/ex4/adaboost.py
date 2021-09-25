@@ -8,6 +8,7 @@ Skeleton for the AdaBoost classifier.
 """
 import numpy as np
 import ex4_tools as t4
+import matplotlib.pyplot as plt
 
 
 class AdaBoost(object):
@@ -51,6 +52,7 @@ class AdaBoost(object):
             sample_weights = sample_weights * np.exp(sign * self.w[i])
             sample_weights = sample_weights / np.sum(
                 sample_weights)  # normalize
+            self.h[i] = weak_learner
         return sample_weights
 
     def predict(self, X, max_t):
@@ -63,7 +65,6 @@ class AdaBoost(object):
         Predict only with max_t weak learners,
         """
         y_pred = np.zeros(X.shape[0])
-        # y_hat = (self.h[t].predict(X) * self.w[t])
         for i in range(max_t):
             y_pred += self.w[i] * self.h[i].predict(X)
         return np.sign(y_pred)
@@ -82,13 +83,82 @@ class AdaBoost(object):
         return err
 
 
-# def generate_data(sample_num=5000, noise_ratio=0, T=500):
-#     train = k
+def error(model, t, X, y):
+    return model.error(X, y, t)
 
 
-def q13_generate_data():
-    train_X, train_y = t4.generate_data(5000, 0)
-    test_X, test_y = t4.generate_data(200, 0)
+def plot_q13(T, tr_err, te_err, noise):
+    plt.figure()
+    plt.plot(T, tr_err, label='Training Error')
+    plt.plot(T, te_err, label='Testing Error')
+    plt.legend()
+    plt.title(f"Q13: Adaboost with decision stumps\n"
+              f"with noise: {noise}")
+    plt.show()
+
+
+def q13_generate_data(noise=0):
+    train_X, train_y = t4.generate_data(5000, noise)
+    test_X, test_y = t4.generate_data(200, noise)
     ada = AdaBoost(t4.DecisionStump, 500)
+    ada.train(train_X, train_y)
+    T = np.arange(1, 501)
+    T = T[..., np.newaxis]
+    tr_err = np.apply_along_axis(lambda t, X, y: error(ada, t[0], X, y), 1, T,
+                                 train_X, train_y)
+    te_err = np.apply_along_axis(lambda t, X, y: error(ada, t[0], X, y), 1, T,
+                                 test_X, test_y)
+    plot_q13(T, tr_err, te_err, noise)
 
-    pass
+
+def q14_generate_data(noise=0):
+    train_X, train_y = t4.generate_data(5000, noise)
+    test_X, test_y = t4.generate_data(200, noise)
+    ada = AdaBoost(t4.DecisionStump, 500)
+    ada.train(train_X, train_y)
+    T = enumerate([5, 10, 50, 100, 200, 500])
+    plt.suptitle(
+        f"Q14: decisions of learned qualifiers with noise: {noise}, and increasing Ts")
+    for i, t in T:
+        plt.subplot(3, 2, i + 1)
+        t4.decision_boundaries(ada, test_X, test_y, t)
+    plt.show()
+
+
+def q15_T_min_error(noise=0):
+    train_X, train_y = t4.generate_data(5000, noise)
+    test_X, test_y = t4.generate_data(200, noise)
+    ada = AdaBoost(t4.DecisionStump, 500)
+    ada.train(train_X, train_y)
+    t = np.arange(1, 501)
+    t = t[..., np.newaxis]
+    err = np.apply_along_axis(lambda i: ada.error(test_X, test_y, i[0]), 1, t)
+    minimizer = np.argmin(err)
+    t4.decision_boundaries(ada, train_X, train_y, minimizer)
+    err_min = err[minimizer]
+    plt.suptitle(
+        f"Q15: T that minimizes error: {minimizer}, Error: {err_min}, noise: {noise}")
+    plt.show()
+
+
+def q16(noise=0):
+    train_X, train_y = t4.generate_data(5000, noise)
+    test_X, test_y = t4.generate_data(200, noise)
+    ada = AdaBoost(t4.DecisionStump, 500)
+    weights = ada.train(train_X, train_y)
+    plt.subplot(1, 2, 1)
+    t4.decision_boundaries(ada, train_X, train_y, 500, weights)
+    plt.subplot(1, 2, 2)
+    weights = 10 * (weights / weights.max())
+    t4.decision_boundaries(ada, train_X, train_y, 500, weights)
+    plt.suptitle(
+        f'Q16: Training a set of  size proportional to its weight with noise: {noise}\n'
+        f'right - not normalized, left normalized')
+    plt.show()
+
+
+# for noise in [0, 0.01, 0.4]:
+    # q13_generate_data(noise)
+    # q14_generate_data(noise)
+    # q15_T_min_error(noise)
+    # q16(noise)
